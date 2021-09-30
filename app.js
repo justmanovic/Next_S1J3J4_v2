@@ -1,6 +1,5 @@
 let gameBtn = document.querySelector('#game')
 
-
 class Player {
   constructor(name, hp, dmg, mana) {
     this.name = name
@@ -39,10 +38,11 @@ class Fighter extends Player {
     this.specialAttackName = 'Dark Vision'
     this.dmgSpecial = 5
     this.manaCost = 20
+    this.specialAttackArr = []
     // this.healPower = healPower
   }
 
-  attack(victim) {
+  attack(victim, turn) {
     let chooseAttack = parseInt(prompt(`Quelle attaque lancer ? 1 pour la classique, 2 pour la spéciale ${this.specialAttackName}`))
     if (chooseAttack === 1) {
       console.log(`${this.name} passe à l'attaque et inflige ${this.dmg} dmg à ${victim.name} `)
@@ -53,6 +53,7 @@ class Fighter extends Player {
         console.log(`Waaaouwww!!! ${this.name} lance son attaque SPECIALE ${this.specialAttackName} et inflige ${this.dmgSpecial} dmg à ${victim.name} `)
         victim.takeDamage(this.dmgSpecial)
         this.checkVictimStatus(victim, this.dmgSpecial)
+        this.defense(turn)
       } else {
         alert("Vous n'avez pas aseez de mana ! Lancement de l'attaque classique...")
         victim.takeDamage(this.dmg)
@@ -61,8 +62,12 @@ class Fighter extends Player {
     }
     console.log('~~~~~~~~~~~~~~~~~~~~~~~~~')
   }
-}
 
+  defense(turn) {
+    this.hp += 2
+    console.log('Le joueur est protégé, il regagne 2pv')
+  }
+}
 
 class Game {
   constructor(playersArr) {
@@ -136,9 +141,10 @@ class Turn {
   }
 }
 
-
 function init() {
   let playersArr = []
+  let player = new Player("Anonymous", 10, 1, 0)
+
   nbPlayers = parseInt(prompt("Combien de joueurs ?"))
   for (i = 1; i <= nbPlayers; i++) {
     let playerName = prompt(`Joueur-${i} quel est ton nom ?`)
@@ -146,12 +152,17 @@ function init() {
     switch (whichCharacter) {
       case 1:
         alert(`Tu as choisi d'être un FIGHTER nommé ${playerName}`)
-        let player = new Fighter(playerName)
+        player = new Fighter(playerName)
         playersArr.push(player)
         break;
+      default:
+        alert(`Tant pis pour toi  ${playerName}, Tu seras un Fighter`)
+        player = new Fighter(playerName)
+        playersArr.push(player)
     }
   }
-  console.log("La Partie va commencer..... Que le meilleur gagne !")
+
+  alert("La Partie va commencer..... Que le meilleur gagne !")
   new Game(playersArr).playGame()
 }
 
