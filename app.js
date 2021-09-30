@@ -18,14 +18,14 @@ class Player {
     console.log('~~~~~~~~~~~~~~~~~~~~~~~~~')
   }
 
-  checkVictimStatus(victim) {
+  checkVictimStatus(victim, dmg) {
     if (victim.hp <= 0) {
       this.mana += 20
-      console.log(`The victim has been killed`)
+      console.log(`${victim.name} est DEAAAD`)
       console.log(`${this.name} gagne 20 points mana`)
     }
     else {
-      console.log(`la vikos ${victim.name} n'est pas morte, elle perd ${this.dmg} hp, il lui reste ${victim.hp} hp ! !`)
+      console.log(`la vikos ${victim.name} n'est pas morte, elle perd ${dmg} hp, il lui reste ${victim.hp} hp ! !`)
     }
   }
 }
@@ -38,34 +38,31 @@ class Fighter extends Player {
     this.manaCost = 20
     // this.healPower = healPower
   }
-}
 
-class Turn {
-  constructor(playersArr) {
-    this.playersArr = playersArr
-  }
-
-  startTurn(turn) {
-    console.log('**************************************')
-    console.log(`C'est le début du tour n° ${turn}`)
-    this.showPlayer()
-    // this.showPlayer()
-    jo.attack(aki)
-    // this.checkGameOver()
-    if (aki.hp > 0)
-      aki.attack(jo)
-    console.log(`C'est la fin du tour n° ${turn}`)
-    console.log('**************************************')
-  }
-
-  showPlayer() {
-    console.log("Voici l'état des joueurs en ce début de manche...")
-    this.playersArr.forEach(player => console.log(player))
+  attack(victim) {
+    let chooseAttack = parseInt(prompt(`Quelle attaque lancer ? 1 pour la classique, 2 pour la spéciale ${this.specialAttackName}`))
+    if (chooseAttack === 1) {
+      console.log(`${this.name} passe à l'attaque et inflige ${this.dmg} dmg à ${victim.name} `)
+      victim.takeDamage(this.dmg)
+      this.checkVictimStatus(victim, this.dmg)
+    } else if (chooseAttack === 2) {
+      if (this.mana > this.manaCost) {
+        console.log(`Waaaouwww!!! ${this.name} lance son attaque SPECIALE ${this.specialAttackName} et inflige ${this.dmgSpecial} dmg à ${victim.name} `)
+        victim.takeDamage(this.dmgSpecial)
+        this.checkVictimStatus(victim, this.dmgSpecial)
+      } else {
+        alert("Vous n'avez pas aseez de mana ! Lancement de l'attaque classique...")
+        victim.takeDamage(this.dmg)
+        this.checkVictimStatus(victim, this.dmg)
+      }
+    }
+    console.log('~~~~~~~~~~~~~~~~~~~~~~~~~')
   }
 }
+
 
 class Game {
-  constructor(playersArr, gameStatus) {
+  constructor(playersArr) {
     this.playersArr = playersArr
     this.turnNb = 1
     this.gameStatus = 'Playing'
@@ -82,13 +79,11 @@ class Game {
       console.log(`Les jeux sont faits, rien ne va plus !`)
       this.gameStatus = 'End of game'
       return this.gameStatus
-
     } else if (this.playersArr.length < 2) {
       console.log(`Il n'y a plus qu'un joueur en jeu : ${this.playersArr[0].name}... il gagne !`)
       this.gameStatus = 'End of game'
       return this.gameStatus
     }
-
     else {
       console.log("RAS, pas de game over pour l'instant, le jeu continue")
     }
@@ -104,16 +99,40 @@ class Game {
       }
     }
   }
-
-
-
-
-
 }
 
+class Turn {
+  constructor(playersArr) {
+    this.playersArr = playersArr
+  }
 
+  startTurn(turn) {
+    console.log('**************************************')
+    console.log(`C'est le début du tour n° ${turn}`)
+    this.showPlayer()
+    this.fightBetweenPlayers()
+    console.log(`C'est la fin du tour n° ${turn}`)
+    console.log('**************************************')
+  }
+
+  fightBetweenPlayers() {
+    this.playersArr.forEach(player => {
+      if (this.playersArr.length > 1 && player.hp > 0)
+        player.attack(this.chooseVictim(player))
+    })
+  }
+
+  chooseVictim(currentPlayer) {
+    return this.playersArr[parseInt(prompt(`${currentPlayer.name}, quel joueur veux-tu niquer?`))]
+  }
+
+  showPlayer() {
+    console.log("Voici l'état des joueurs en ce début de manche...")
+    this.playersArr.forEach(player => console.log(`${this.playersArr.indexOf(player)} - ${player.name} - ${player.hp} hp`))
+  }
+}
 
 const jo = new Fighter('Justman')
 const aki = new Fighter('Chang')
-
-const game = new Game([jo, aki])
+const eric = new Fighter('Rico')
+const game = new Game([jo, aki, eric])
