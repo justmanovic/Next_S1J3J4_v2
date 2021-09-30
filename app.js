@@ -1,3 +1,6 @@
+let gameBtn = document.querySelector('#game')
+
+
 class Player {
   constructor(name, hp, dmg, mana) {
     this.name = name
@@ -91,7 +94,8 @@ class Game {
 
   playGame() {
     while (this.gameStatus === 'Playing') {
-      this.checkGameOver()
+      if (this.turnNb > 1)
+        this.checkGameOver()
       let turn = new Turn(this.playersArr)
       if (this.playersArr.length > 1) {
         turn.startTurn(this.turnNb)
@@ -132,7 +136,36 @@ class Turn {
   }
 }
 
+
+function init() {
+  let playersArr = []
+  nbPlayers = parseInt(prompt("Combien de joueurs ?"))
+  for (i = 1; i <= nbPlayers; i++) {
+    let playerName = prompt(`Joueur-${i} quel est ton nom ?`)
+    whichCharacter = parseInt(prompt(`Très bien ${playerName}, quel est ton personnage ? Tapes 1 pour Fighter`))
+    switch (whichCharacter) {
+      case 1:
+        alert(`Tu as choisi d'être un FIGHTER nommé ${playerName}`)
+        let player = new Fighter(playerName)
+        playersArr.push(player)
+        break;
+    }
+  }
+  console.log("La Partie va commencer..... Que le meilleur gagne !")
+  new Game(playersArr).playGame()
+}
+
+gameBtn.addEventListener("click", init)
+
+
 const jo = new Fighter('Justman')
 const aki = new Fighter('Chang')
 const eric = new Fighter('Rico')
-const game = new Game([jo, aki, eric])
+
+
+
+function quitGame() {
+
+
+  throw new Error("Something went badly wrong!");
+}
