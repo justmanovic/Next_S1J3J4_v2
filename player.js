@@ -4,7 +4,8 @@ class Player {
     this.hp = hp
     this.dmg = dmg
     this.mana = mana
-    this.status = 'playing'
+    this.previousTurnSpecial = false
+    this.thisTurnSpecial = false
   }
 
   takeDamage(dmg) {
@@ -30,7 +31,7 @@ class Player {
 
     } else {
       alert("Vous n'avez pas aseez de mana ! Lancement de l'attaque classique...")
-      regularAttack(victim)
+      this.regularAttack(victim)
     }
   }
 
@@ -39,13 +40,16 @@ class Player {
   }
 
   attack(victim) {
+    this.previousTurnSpecial = this.thisTurnSpecial
     let chooseAttack = 0
     chooseAttack = this.askWhichAttack()
     switch (chooseAttack) {
       case 1:
+        this.thisTurnSpecial = false
         this.regularAttack(victim)
         break;
       case 2:
+        this.thisTurnSpecial = true
         this.attackSpecial(victim)
         break;
       default:
@@ -57,7 +61,7 @@ class Player {
 
   checkVictimStatus(victim, dmg) {
     if (victim.hp <= 0) {
-      this.mana += 20
+      loseMana(-20)
       console.log(`${victim.name} est DEAAAD`)
       console.log(`${this.name} gagne 20 points mana`)
     }
@@ -92,6 +96,17 @@ class Fighter extends Player {
     this.manaCost = 20
     this.healPower = 0
   }
+
+  takeDamage = (dmg) => {
+    if (this.thisTurnSpecial === true) {
+      this.hp -= dmg - 2
+      console.log(`Le joueur ${this.name} a utilisé son attaque spéciale durant ce tour... Il perd 2 hp de moins ${dmg - 2}hp au lieu de ${dmg}hp en temps normal`)
+    }
+    else {
+      this.hp -= dmg
+    }
+  }
+
 }
 
 class Paladin extends Player {
@@ -137,7 +152,7 @@ class Berzeker extends Player {
 class Assassin extends Player {
   constructor(name, hp, dmg, mana) {
     super(name)
-    this.specialAttackName = 'Heal'
+    this.specialAttackName = 'Shadow Hit'
     this.dmg = 6
     this.hp = 6
     this.mana = 20
@@ -145,6 +160,16 @@ class Assassin extends Player {
     this.manaCost = 20
     this.healPower = 0
   }
+
+  takeDamage(dmg) {
+    if (this.previousTurnSpecial === true) {
+      console.log(`${this.name} est protégé car il a utilisé son attaque spéciale au dernier tour ! Il ne perd donc pas de hp`)
+    }
+    else {
+      this.hp -= dmg
+    }
+  }
+
 }
 
 

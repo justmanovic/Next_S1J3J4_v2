@@ -6,6 +6,7 @@ class Game {
   }
 
   updatePlayersArr() {
+    this.playersArr.forEach(player => player.previousTurnSpecial = player.thisTurnSpecial)
     this.playersArr = this.playersArr.filter(player => player.hp > 0)
     return this.playersArr
   }
