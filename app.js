@@ -13,11 +13,46 @@ class Player {
     this.hp -= dmg
   }
 
-  attack(victim) {
-    console.log(`${this.name} passe à l'attaque et inflige ${this.dmg} dmg à ${victim.name} `)
+  loseMana(mana) {
+    this.mana -= mana
+  }
+
+  regularAttack(victim) {
+    console.log(`${this.name} passe à l'attaque et inflige ${this.dmg} dmg à ${victim.name}`)
     victim.takeDamage(this.dmg)
-    this.checkVictimStatus(victim)
-    console.log('~~~~~~~~~~~~~~~~~~~~~~~~~')
+    this.checkVictimStatus(victim, this.dmg)
+  }
+
+  attackSpecial(victim) {
+    if (this.mana > this.manaCost) {
+      console.log(`Waaaouwww!!! ${this.name} lance son attaque SPECIALE ${this.specialAttackName} et inflige ${this.dmgSpecial} dmg à ${victim.name} `)
+      victim.takeDamage(this.dmgSpecial)
+      this.checkVictimStatus(victim, this.dmgSpecial)
+      this.loseMana(this.manaCost)
+    } else {
+      alert("Vous n'avez pas aseez de mana ! Lancement de l'attaque classique...")
+      victim.takeDamage(this.dmg)
+      this.checkVictimStatus(victim, this.dmg)
+    }
+  }
+
+  askWhichAttack() {
+    return parseInt(prompt(`Quelle attaque lancer ? 1 pour la classique, 2 pour la spéciale ${this.specialAttackName}`))
+  }
+
+  attack(victim) {
+    let chooseAttack = 0
+    chooseAttack = this.askWhichAttack()
+    if (chooseAttack === 1)
+      this.regularAttack(victim)
+    else if (chooseAttack === 2)
+      this.attackSpecial(victim)
+    else {
+      alert('Allez, essaie encore... ')
+      chooseAttack = this.askWhichAttack()
+
+    }
+    console.log('~~~ Attaque terminée ~~~')
   }
 
   checkVictimStatus(victim, dmg) {
@@ -40,32 +75,6 @@ class Fighter extends Player {
     this.manaCost = 20
     this.specialAttackArr = []
     // this.healPower = healPower
-  }
-
-  attack(victim, turn) {
-    let chooseAttack = parseInt(prompt(`Quelle attaque lancer ? 1 pour la classique, 2 pour la spéciale ${this.specialAttackName}`))
-    if (chooseAttack === 1) {
-      console.log(`${this.name} passe à l'attaque et inflige ${this.dmg} dmg à ${victim.name} `)
-      victim.takeDamage(this.dmg)
-      this.checkVictimStatus(victim, this.dmg)
-    } else if (chooseAttack === 2) {
-      if (this.mana > this.manaCost) {
-        console.log(`Waaaouwww!!! ${this.name} lance son attaque SPECIALE ${this.specialAttackName} et inflige ${this.dmgSpecial} dmg à ${victim.name} `)
-        victim.takeDamage(this.dmgSpecial)
-        this.checkVictimStatus(victim, this.dmgSpecial)
-        this.defense(turn)
-      } else {
-        alert("Vous n'avez pas aseez de mana ! Lancement de l'attaque classique...")
-        victim.takeDamage(this.dmg)
-        this.checkVictimStatus(victim, this.dmg)
-      }
-    }
-    console.log('~~~~~~~~~~~~~~~~~~~~~~~~~')
-  }
-
-  defense(turn) {
-    this.hp += 2
-    console.log('Le joueur est protégé, il regagne 2pv')
   }
 }
 
@@ -137,7 +146,7 @@ class Turn {
 
   showPlayer() {
     console.log("Voici l'état des joueurs en ce début de manche...")
-    this.playersArr.forEach(player => console.log(`${this.playersArr.indexOf(player)} - ${player.name} - ${player.hp} hp`))
+    this.playersArr.forEach(player => console.log(`${this.playersArr.indexOf(player)} - ${player.name} - ${player.hp} hp  - ${player.mana} mana`))
   }
 }
 
@@ -168,15 +177,6 @@ function init() {
 
 gameBtn.addEventListener("click", init)
 
-
 const jo = new Fighter('Justman')
 const aki = new Fighter('Chang')
 const eric = new Fighter('Rico')
-
-
-
-function quitGame() {
-
-
-  throw new Error("Something went badly wrong!");
-}
