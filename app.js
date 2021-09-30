@@ -141,7 +141,13 @@ class Turn {
   }
 
   chooseVictim(currentPlayer) {
-    return this.playersArr[parseInt(prompt(`${currentPlayer.name}, quel joueur veux-tu niquer?`))]
+    let victim = 0
+    victim = this.playersArr[parseInt(prompt(`${currentPlayer.name}, quel joueur veux-tu niquer?`))]
+    while (!this.playersArr.includes(victim)) {
+      alert(`Allez, un petit effort ! Choisis un nombre entre 0 et ${this.playersArr.length - 1}`)
+      victim = this.playersArr[parseInt(prompt(`${currentPlayer.name}, quel joueur veux-tu niquer?`))]
+    }
+    return victim
   }
 
   showPlayer() {
